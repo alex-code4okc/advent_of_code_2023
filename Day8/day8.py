@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+import math
 
 def read_file(filename: str) -> list[str]:
     current_script_path = Path(__file__).resolve()
@@ -41,11 +42,8 @@ def part1():
             break
     return steps
 
-def part2():
-    directions, mapping = setup()
-    keys_A = [k for k in mapping.keys() if k[2] == 'A']
-    initial_paths_count = len(keys_A)
-    current_nodes = [mapping[k] for k in keys_A]
+def steps_per_key(key, directions,mapping):
+    current_node = mapping[key]
     # loop
     i = 0
     n = len(directions)
@@ -53,17 +51,25 @@ def part2():
     while True:
         direction = directions[i]
         index = direction_mapping[direction]
-        next_node_keys = [cn[index] for cn in current_nodes]
+        next_node_key = current_node[index]
         i = (i+1)%n
         steps += 1
-        current_nodes = [mapping[k] for k in next_node_keys]
-        all_Z = [k[2] for k in next_node_keys]
-        if all_Z.count('Z') == initial_paths_count:
+        current_node = mapping[next_node_key]
+        if next_node_key[2] == 'Z':
             break
     return steps
 
+def part2():
+    directions, mapping = setup()
+    keys_A = [k for k in mapping.keys() if k[2] == 'A']
+    steps = []
+    for key in keys_A:
+        step = steps_per_key(key,directions,mapping)
+        steps.append(step)
+    return math.lcm(*steps)
+
 def results():
-    #answer1 = part1()
+    answer1 = part1()
     answer2 = part2()
     pass
 
